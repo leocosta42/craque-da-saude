@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Dumbbell, Clock, Timer, Plus, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useToast } from '../../components/Layout/Toast';
 
 const USER_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -19,6 +20,7 @@ export default function EsportesPage() {
   const [selectedSport, setSelectedSport] = useState('futebol');
   const [duration, setDuration] = useState('30');
   const [loading, setLoading] = useState(true);
+  const { showToast, showConfirm } = useToast();
 
   async function fetchSportsLogs() {
     setLoading(true);
@@ -49,22 +51,19 @@ export default function EsportesPage() {
       }]);
 
     if (!error) {
-      alert('🏆 Treino concluído! Pontos de experiência adicionados!');
+      showToast('🏆 Treino concluído! Pontos de experiência adicionados!', 'success');
       fetchSportsLogs();
     }
   };
 
-  const deleteSportLog = async (id) => {
-    if (!confirm('⚽ Deseja mesmo apagar esse treino?')) return;
-    
-    const { error } = await supabase
-      .from('sports_logs')
-      .delete()
-      .eq('id', id);
-
-    if (!error) {
-      fetchSportsLogs();
-    }
+  const deleteSportLog = (id) => {
+    showConfirm('Deseja mesmo apagar esse treino?', async () => {
+      const { error } = await supabase
+        .from('sports_logs')
+        .delete()
+        .eq('id', id);
+      if (!error) fetchSportsLogs();
+    });
   };
 
   return (

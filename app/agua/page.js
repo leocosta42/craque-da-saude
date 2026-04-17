@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Droplets, Waves, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useToast } from '../../components/Layout/Toast';
 
 const USER_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -11,6 +12,7 @@ export default function AguaPage() {
   const [goalMl, setGoalMl] = useState(2000); 
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showConfirm } = useToast();
   
   async function initData() {
     setLoading(true);
@@ -54,10 +56,11 @@ export default function AguaPage() {
     }
   };
 
-  const deleteWater = async (id) => {
-    if (!confirm('⚽ Apagar esse registro de água?')) return;
-    const { error } = await supabase.from('water_logs').delete().eq('id', id);
-    if (!error) initData();
+  const deleteWater = (id) => {
+    showConfirm('Apagar esse registro de água?', async () => {
+      const { error } = await supabase.from('water_logs').delete().eq('id', id);
+      if (!error) initData();
+    });
   };
 
   const percentage = Math.min(100, Math.round((waterMl / goalMl) * 100));

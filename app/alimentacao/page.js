@@ -3,6 +3,7 @@ import { Apple, Pizza, Check, X, Trophy, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
+import { useToast } from '../../components/Layout/Toast';
 
 const USER_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -20,6 +21,7 @@ const STICKERS = [
 export default function AlimentacaoPage() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showToast, showConfirm } = useToast();
 
   async function fetchLogs() {
     setLoading(true);
@@ -46,15 +48,16 @@ export default function AlimentacaoPage() {
       .insert([{ user_id: USER_ID, type }]);
 
     if (!error) {
-      alert(type === 'premium' ? '🏆 Golaço! Combustível Premium!' : '⚽ Foco no treino! Menos desgaste na próxima!');
+      showToast(type === 'premium' ? '🏆 Golaço! Combustível Premium!' : '⚽ Foco no treino! Menos desgaste na próxima!', type === 'premium' ? 'success' : 'warning');
       fetchLogs();
     }
   };
 
-  const deleteMeal = async (id) => {
-    if (!confirm('⚽ Apagar essa refeição do histórico?')) return;
-    const { error } = await supabase.from('food_logs').delete().eq('id', id);
-    if (!error) fetchLogs();
+  const deleteMeal = (id) => {
+    showConfirm('Apagar essa refeição do histórico?', async () => {
+      const { error } = await supabase.from('food_logs').delete().eq('id', id);
+      if (!error) fetchLogs();
+    });
   };
 
   const healthyCount = logs.filter(l => l.type === 'premium').length;

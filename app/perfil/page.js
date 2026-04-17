@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { User, Calendar, Ruler, Weight, Target, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useToast } from '../../components/Layout/Toast';
 
 export default function PerfilPage() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export default function PerfilPage() {
     startWeight: '',
     goal: ''
   });
+  const { showToast } = useToast();
 
   useEffect(() => {
     // Carrega dados salvos
@@ -36,7 +38,7 @@ export default function PerfilPage() {
     localStorage.setItem('craque_height', formData.height);
     localStorage.setItem('craque_startWeight', formData.startWeight);
     localStorage.setItem('craque_goal', formData.goal);
-    alert('🏆 Perfil de Atleta atualizado com sucesso!');
+    showToast('Perfil de Atleta atualizado com sucesso! 🏆', 'success');
   };
 
   return (

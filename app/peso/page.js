@@ -5,6 +5,7 @@ import WeightChart from '../../components/Weight/WeightChart';
 import MotivationalCard from '../../components/Weight/MotivationalCard';
 import { format } from 'date-fns';
 import { Trash2 } from 'lucide-react';
+import { useToast } from '../../components/Layout/Toast';
 
 const USER_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -13,6 +14,7 @@ export default function PesoPage() {
   const [showGoal, setShowGoal] = useState(false);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showToast, showConfirm } = useToast();
 
   async function fetchHistory() {
     setLoading(true);
@@ -44,7 +46,7 @@ export default function PesoPage() {
   const handleSave = async () => {
     const val = parseFloat(weight);
     if (!val || val < 10 || val > 200) {
-      alert('⚽ Ops! Informe um peso válido entre 10kg e 200kg.');
+      showToast('Informe um peso válido entre 10kg e 200kg.', 'warning');
       return;
     }
 
@@ -59,14 +61,15 @@ export default function PesoPage() {
       fetchHistory();
       setTimeout(() => setShowGoal(false), 3000);
     } else {
-      alert('Tivemos um problema no gramado! Tente novamente.');
+      showToast('Tivemos um problema no gramado! Tente novamente.', 'error');
     }
   };
 
-  const deleteWeight = async (id) => {
-    if (!confirm('⚽ Apagar esse registro de peso?')) return;
-    const { error } = await supabase.from('weight_logs').delete().eq('id', id);
-    if (!error) fetchHistory();
+  const deleteWeight = (id) => {
+    showConfirm('Apagar esse registro de peso?', async () => {
+      const { error } = await supabase.from('weight_logs').delete().eq('id', id);
+      if (!error) fetchHistory();
+    });
   };
 
   return (

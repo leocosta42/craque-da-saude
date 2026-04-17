@@ -10,10 +10,6 @@ export default function AguaPage() {
   const [goalMl, setGoalMl] = useState(2000); 
   const [loading, setLoading] = useState(true);
   
-  useEffect(() => {
-    initData();
-  }, []);
-
   async function initData() {
     setLoading(true);
     const today = new Date().toISOString().split('T')[0];
@@ -38,6 +34,11 @@ export default function AguaPage() {
     setGoalMl(calcGoal);
     setLoading(false);
   }
+
+  useEffect(() => {
+    initData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const addWater = async (amount) => {
     const { error } = await supabase

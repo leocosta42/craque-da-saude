@@ -21,10 +21,6 @@ export default function AlimentacaoPage() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
-
   async function fetchLogs() {
     setLoading(true);
     const today = new Date().toISOString().split('T')[0];
@@ -38,6 +34,11 @@ export default function AlimentacaoPage() {
     if (data) setLogs(data);
     setLoading(false);
   }
+
+  useEffect(() => {
+    fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const logMeal = async (type) => {
     const { error } = await supabase

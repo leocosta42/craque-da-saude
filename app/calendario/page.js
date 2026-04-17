@@ -17,10 +17,6 @@ export default function CalendarioPage() {
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState(null);
 
-  useEffect(() => {
-    fetchLogs();
-  }, [currentMonth]);
-
   async function fetchLogs() {
     setLoading(true);
     // Buscamos um intervalo maior para ter o peso do último dia do mês anterior para comparação
@@ -39,6 +35,11 @@ export default function CalendarioPage() {
     if (data) setWeightLogs(data);
     setLoading(false);
   }
+
+  useEffect(() => {
+    fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentMonth]);
 
   // Grade de dias (D S T Q Q S S)
   const monthStart = startOfMonth(currentMonth);

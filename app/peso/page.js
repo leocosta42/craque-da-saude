@@ -13,9 +13,7 @@ export default function PesoPage() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchHistory();
-  }, []);
+  const [loading, setLoading] = useState(true);
 
   async function fetchHistory() {
     setLoading(true);
@@ -33,10 +31,16 @@ export default function PesoPage() {
       });
       
       const uniqueDays = Object.values(grouped).slice(-30); // Pega os últimos 30 dias únicos
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHistory(uniqueDays);
     }
     setLoading(false);
   }
+
+  useEffect(() => {
+    fetchHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSave = async () => {
     const val = parseFloat(weight);

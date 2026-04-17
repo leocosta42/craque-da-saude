@@ -1,18 +1,18 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Scale, Apple, Droplet, CalendarDays, Dumbbell } from 'lucide-react';
+import { Home, Scale, Apple, Droplet, CalendarDays, Dumbbell } from 'lucide-react';
 import styles from './BottomNavigation.module.css';
 
 export default function BottomNavigation() {
   const pathname = usePathname();
 
   const navItems = [
+    { path: '/', label: 'Início', icon: Home, exact: true },
     { path: '/peso', label: 'Peso', icon: Scale },
-    { path: '/alimentacao', label: 'Comida', icon: Apple },
     { path: '/agua', label: 'Água', icon: Droplet },
     { path: '/esportes', label: 'Esportes', icon: Dumbbell },
-    { path: '/calendario', label: 'Histórico', icon: CalendarDays },
+    { path: '/calendario', label: 'Agenda', icon: CalendarDays },
   ];
 
   return (
@@ -20,11 +20,11 @@ export default function BottomNavigation() {
       <div className={styles.navContainer}>
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname.startsWith(item.path);
+          const isActive = item.exact ? pathname === item.path : pathname.startsWith(item.path);
           return (
             <Link key={item.path} href={item.path} className={`${styles.navItem} ${isActive ? styles.active : ''}`}>
               <div className={styles.iconContainer}>
-                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
               </div>
               <span className={styles.label}>{item.label}</span>
             </Link>

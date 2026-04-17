@@ -7,7 +7,7 @@ import {
   isAfter, isToday
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Flame, Trophy, Info } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Flame, Trophy, Info, CalendarDays } from 'lucide-react';
 
 const USER_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -35,6 +35,7 @@ export default function CalendarioPage() {
       .lte('recorded_at', endFetch)
       .order('recorded_at', { ascending: true });
     
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (data) setWeightLogs(data);
     setLoading(false);
   }

@@ -9,6 +9,7 @@ export default function TopHeader() {
 
   useEffect(() => {
     const savedName = localStorage.getItem('craque_name');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (savedName) setName(savedName);
   }, []);
 

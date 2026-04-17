@@ -21,6 +21,7 @@ export default function PerfilPage() {
       startWeight: localStorage.getItem('craque_startWeight') || '',
       goal: localStorage.getItem('craque_goal') || ''
     };
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormData(data);
   }, []);
 

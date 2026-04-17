@@ -1,101 +1,143 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Droplets } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { Droplets, Waves } from 'lucide-react';
+
+const USER_ID = '00000000-0000-0000-0000-000000000000';
 
 export default function AguaPage() {
   const [waterMl, setWaterMl] = useState(0); 
   const [goalMl, setGoalMl] = useState(2000); 
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // Busca o peso informado na aba "Meu Peso", caso contrário usa 45kg como base provisória.
-    const currentWeight = parseFloat(localStorage.getItem('craque_weight')) || 45;
-    
-    // Cálculo pediátrico de hidratação (Base inspirada em Holliday-Segar)
-    // Para peso > 20kg: 1500ml + 20ml por cada kg acima de 20kg.
-    let calcGoal = 2000;
-    if (currentWeight > 20) {
-      calcGoal = 1500 + ((currentWeight - 20) * 20);
-    } else {
-      calcGoal = currentWeight * 50; 
-    }
-    
-    // Arredonda para ficar um número "cheio" mais lúdico (ex: 2100, 2500)
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setGoalMl(Math.round(calcGoal / 100) * 100);
+    initData();
   }, []);
+
+  async function initData() {
+    setLoading(true);
+    const today = new Date().toISOString().split('T')[0];
+    
+    // 1. Pega logs de hoje
+    const { data } = await supabase
+      .from('water_logs')
+      .select('*')
+      .eq('user_id', USER_ID)
+      .gte('recorded_at', `${today}T00:00:00Z`);
+    
+    if (data) {
+      const total = data.reduce((acc, curr) => acc + curr.amount_ml, 0);
+      setWaterMl(total);
+    }
+
+    // 2. Calcula Meta (Peso * 40ml)
+    const currentWeight = parseFloat(localStorage.getItem('craque_weight')) || 45;
+    let calcGoal = currentWeight * 40;
+    if (calcGoal < 1500) calcGoal = 1500;
+    if (calcGoal > 3000) calcGoal = 3000;
+    setGoalMl(calcGoal);
+    setLoading(false);
+  }
+
+  const addWater = async (amount) => {
+    const { error } = await supabase
+      .from('water_logs')
+      .insert([{ user_id: USER_ID, amount_ml: amount }]);
+
+    if (!error) {
+      setWaterMl(prev => prev + amount);
+    }
+  };
 
   const percentage = Math.min(100, Math.round((waterMl / goalMl) * 100));
 
-  const addWater = (amount) => {
-    setWaterMl(prev => prev + amount);
+  const getMessage = () => {
+    if (percentage >= 100) return 'Campo irrigado! Missão cumprida! 🏆';
+    if (percentage >= 75) return 'Último quarto! Você está voando! 🚀';
+    if (percentage >= 50) return 'Intervalo do jogo! Metade do caminho! ⚽';
+    if (percentage >= 25) return 'Aquecimento iniciado! 🌱';
+    return 'Vamos começar o treino? Beba água! 💧';
   };
 
   return (
     <div style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       
-      <div className="card" style={{ textAlign: 'center' }}>
+      <div className="card" style={{ textAlign: 'center', position: 'relative' }}>
         <h2 className="title-primary">Hidratação do Campo 💧</h2>
-        <p className="subtitle">Mantenha seu gramado verde para o jogo!</p>
+        <p className="subtitle">{getMessage()}</p>
 
-        <div style={{
-          width: '100%',
-          height: '200px',
-          background: '#e0cc9f', // cor de terra/gramado seco
-          borderRadius: 'var(--radius-lg)',
-          position: 'relative',
-          overflow: 'hidden',
-          marginBottom: '1.5rem',
-          boxShadow: 'inset 0 4px 10px rgba(0,0,0,0.1)'
-        }}>
-          {/* A grama verde subindo de acordo com a porcentagem */}
+        {loading ? <div className="spinner" style={{ margin: '2rem auto' }}></div> : (
           <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: `${percentage}%`,
-            background: 'var(--grad-field)',
-            transition: 'height 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-          }} />
-
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            background: 'rgba(255,255,255,0.9)',
-            padding: '0.5rem 1rem',
-            borderRadius: 'var(--radius-full)',
-            fontWeight: 700,
-            color: 'var(--text-main)',
-            boxShadow: 'var(--shadow-sm)'
+            width: '100%',
+            height: '240px',
+            background: '#e0cc9f', // cor de terra
+            borderRadius: 'var(--radius-lg)',
+            position: 'relative',
+            overflow: 'hidden',
+            marginBottom: '1.5rem',
+            border: '8px solid #f8f9fa',
+            boxShadow: 'inset 0 4px 10px rgba(0,0,0,0.1)'
           }}>
-            {percentage}% Irrigado
+            {/* O gramado/água subindo */}
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: `${percentage}%`,
+              background: 'linear-gradient(to top, #2ecc71, #3498db)',
+              transition: 'height 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            }}>
+              {percentage > 0 && <div className="water-wave" />}
+            </div>
+
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: 'rgba(255,255,255,0.9)',
+              padding: '0.5rem 1rem',
+              borderRadius: 'var(--radius-full)',
+              fontWeight: 800,
+              color: '#2980b9',
+              boxShadow: 'var(--shadow-sm)',
+              zIndex: 10
+            }}>
+              {percentage}% Irrigado
+            </div>
           </div>
+        )}
+
+        <div style={{ marginBottom: '1rem' }}>
+          <span style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--water-blue)' }}>{waterMl}</span>
+          <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}> / {goalMl} ml</span>
         </div>
 
-        <h3 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0.5rem 0' }}>{waterMl} ml / <span style={{ color: 'var(--text-muted)' }}>{goalMl} ml</span></h3>
-
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1rem' }}>
-          <button 
-            onClick={() => addWater(250)}
-            style={{
-              flex: 1,
-              padding: '1rem',
-              borderRadius: 'var(--radius-md)',
-              background: 'var(--water-blue)',
-              color: 'white',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-              boxShadow: '0 4px 15px rgba(52, 152, 219, 0.3)'
-            }}
-          >
-            <Droplets size={20} />
-            + 250ml
-          </button>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem' }}>
+          {[150, 250, 500].map(amount => (
+            <button 
+              key={amount}
+              onClick={() => addWater(amount)}
+              style={{
+                padding: '0.8rem 0',
+                borderRadius: 'var(--radius-md)',
+                background: 'white',
+                border: '2px solid var(--water-blue)',
+                color: 'var(--water-blue)',
+                fontWeight: 700,
+                fontSize: '0.85rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4px',
+                transition: 'all 0.2s'
+              }}
+            >
+              <Droplets size={14} />
+              +{amount}ml
+            </button>
+          ))}
         </div>
       </div>
 

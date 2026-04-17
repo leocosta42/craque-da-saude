@@ -1,46 +1,85 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 import WeightChart from '../../components/Weight/WeightChart';
 import MotivationalCard from '../../components/Weight/MotivationalCard';
 
+const USER_ID = '00000000-0000-0000-0000-000000000000';
+
 export default function PesoPage() {
   const [weight, setWeight] = useState('');
+  const [showGoal, setShowGoal] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSave = () => {
-    if (!weight) return;
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  async function fetchHistory() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('weight_logs')
+      .select('*')
+      .order('recorded_at', { ascending: true })
+      .limit(30);
     
-    // Salvando localmente para calcular a meta de água
-    localStorage.setItem('craque_weight', weight);
-    
-    // Logica de salvar no supabase virá aqui
-    alert(`Golaço! Você registrou ${weight}kg pro seu treino de hoje.`);
-    setWeight('');
+    if (data) setHistory(data);
+    setLoading(false);
+  }
+
+  const handleSave = async () => {
+    const val = parseFloat(weight);
+    if (!val || val < 10 || val > 200) {
+      alert('⚽ Ops! Informe um peso válido entre 10kg e 200kg.');
+      return;
+    }
+
+    const { error } = await supabase
+      .from('weight_logs')
+      .insert([{ user_id: USER_ID, weight: val }]);
+
+    if (!error) {
+      setShowGoal(true);
+      localStorage.setItem('craque_weight', val);
+      setWeight('');
+      fetchHistory();
+      setTimeout(() => setShowGoal(false), 3000);
+    } else {
+      alert('Tivemos um problema no gramado! Tente novamente.');
+    }
   };
 
   return (
     <div style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {showGoal && <div className="goal-animation">⚽ GOL!! Peso Registrado!</div>}
+      
       <MotivationalCard />
 
       <div className="card">
         <h2 className="title-primary">Registrar Treino ⚽</h2>
-        <p className="subtitle">Seu peso de hoje para o acompanhamento da temporada.</p>
+        <p className="subtitle">Seu peso de hoje para a academia do craque.</p>
         
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-          <input 
-            type="number"
-            step="0.1"
-            placeholder="Ex: 45.5"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            style={{
-              flex: 1,
-              padding: '1rem',
-              borderRadius: '12px',
-              border: '2px solid var(--neutral-gray)',
-              fontSize: '1.2rem',
-              outline: 'none'
-            }}
-          />
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', position: 'relative' }}>
+          <div style={{ flex: 1, position: 'relative' }}>
+            <input 
+              type="number"
+              step="0.1"
+              placeholder="Ex: 45.5"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '1rem',
+                paddingRight: '3rem',
+                borderRadius: '12px',
+                border: '2px solid var(--neutral-gray)',
+                fontSize: '1.2rem',
+                outline: 'none'
+              }}
+            />
+            <span style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', fontWeight: 600, color: 'var(--text-muted)' }}>kg</span>
+          </div>
           <button 
             onClick={handleSave}
             style={{
@@ -61,8 +100,13 @@ export default function PesoPage() {
 
       <div className="card">
         <h2 className="title-primary">Evolução do Craque</h2>
-        <p className="subtitle">Veja sua consistência de treinos e crescimento.</p>
-        <WeightChart />
+        <p className="subtitle">Verde = Em forma | Vermelho = Ganho natural</p>
+        
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}><div className="spinner"></div></div>
+        ) : (
+          <WeightChart data={history} />
+        )}
       </div>
     </div>
   );

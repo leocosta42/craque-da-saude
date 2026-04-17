@@ -95,4 +95,91 @@ button {
   box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Sombra lateral no desktop */
 }
 
-/* Navegação e Estrutura ficarão nos seus próprios módulos, mas aqui tem a base */
+/* Animação do Gol */
+@keyframes goal-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.goal-animation {
+  animation: goal-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--field-green-dark);
+  text-shadow: 2px 2px 0 white, -2px -2px 0 white;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Animação de Irrigação */
+.water-wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background: white;
+  opacity: 0.3;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  animation: wave-flow 2s infinite linear;
+}
+
+@keyframes wave-flow {
+  0% { transform: translateY(-50%) scaleX(1); }
+  50% { transform: translateY(-50%) scaleX(1.5); opacity: 0.1; }
+  100% { transform: translateY(-50%) scaleX(1); }
+}
+
+/* Status no Calendário */
+.dot-green { background-color: var(--field-green); }
+.dot-red { background-color: #e74c3c; }
+.dot-gray { background-color: var(--neutral-gray); }
+
+/* Loading Spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(0,0,0,0.1);
+  border-left-color: var(--field-green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Toast */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background: var(--text-main);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slide-down 0.3s ease-out;
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

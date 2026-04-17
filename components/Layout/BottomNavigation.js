@@ -10,8 +10,9 @@ export default function BottomNavigation() {
   const navItems = [
     { path: '/', label: 'Início', icon: Home, exact: true },
     { path: '/peso', label: 'Peso', icon: Scale },
+    { path: '/alimentacao', label: 'Comida', icon: Apple },
     { path: '/agua', label: 'Água', icon: Droplet },
-    { path: '/esportes', label: 'Esportes', icon: Dumbbell },
+    { path: '/esportes', label: 'Treino', icon: Dumbbell },
     { path: '/calendario', label: 'Agenda', icon: CalendarDays },
   ];
 

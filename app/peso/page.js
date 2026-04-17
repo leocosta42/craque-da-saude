@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import WeightChart from '../../components/Weight/WeightChart';
 import MotivationalCard from '../../components/Weight/MotivationalCard';
+import { format } from 'date-fns';
 
 const USER_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -21,10 +22,19 @@ export default function PesoPage() {
     const { data, error } = await supabase
       .from('weight_logs')
       .select('*')
-      .order('recorded_at', { ascending: true })
-      .limit(30);
+      .order('recorded_at', { ascending: true });
     
-    if (data) setHistory(data);
+    if (data) {
+      // INTELIGENCIA: Agrupa por dia e pega o ULTIMO registro de cada dia
+      const grouped = {};
+      data.forEach(log => {
+        const dayStr = format(new Date(log.recorded_at), 'yyyy-MM-dd');
+        grouped[dayStr] = log; // Sobrescreve, mantendo sempre o último do dia
+      });
+      
+      const uniqueDays = Object.values(grouped).slice(-30); // Pega os últimos 30 dias únicos
+      setHistory(uniqueDays);
+    }
     setLoading(false);
   }
 

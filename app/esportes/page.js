@@ -54,6 +54,19 @@ export default function EsportesPage() {
     }
   };
 
+  const deleteSportLog = async (id) => {
+    if (!confirm('⚽ Deseja mesmo apagar esse treino?')) return;
+    
+    const { error } = await supabase
+      .from('sports_logs')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      fetchSportsLogs();
+    }
+  };
+
   return (
     <div style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '2rem' }}>
       
@@ -152,8 +165,16 @@ export default function EsportesPage() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                    {format(new Date(log.recorded_at), 'dd/MM')}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+                      {format(new Date(log.recorded_at), 'dd/MM')}
+                    </div>
+                    <button 
+                      onClick={() => deleteSportLog(log.id)}
+                      style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', padding: '4px' }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </div>
               );

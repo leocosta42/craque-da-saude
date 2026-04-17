@@ -1,5 +1,5 @@
 'use client';
-import { Apple, Pizza, Check, X, Trophy } from 'lucide-react';
+import { Apple, Pizza, Check, X, Trophy, Trash2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { format } from 'date-fns';
@@ -49,6 +49,12 @@ export default function AlimentacaoPage() {
       alert(type === 'premium' ? '🏆 Golaço! Combustível Premium!' : '⚽ Foco no treino! Menos desgaste na próxima!');
       fetchLogs();
     }
+  };
+
+  const deleteMeal = async (id) => {
+    if (!confirm('⚽ Apagar essa refeição do histórico?')) return;
+    const { error } = await supabase.from('food_logs').delete().eq('id', id);
+    if (!error) fetchLogs();
   };
 
   const healthyCount = logs.filter(l => l.type === 'premium').length;
@@ -124,9 +130,14 @@ export default function AlimentacaoPage() {
                 <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>
                   {log.type === 'premium' ? '🥗 Combustível Premium' : '🍕 Alimento de Desgaste'}
                 </span>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  {format(new Date(log.recorded_at), 'HH:mm')}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    {format(new Date(log.recorded_at), 'HH:mm')}
+                  </span>
+                  <button onClick={() => deleteMeal(log.id)} style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer' }}>
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

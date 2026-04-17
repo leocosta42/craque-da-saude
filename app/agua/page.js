@@ -1,16 +1,19 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Droplets, Waves } from 'lucide-react';
+import { Droplets, Waves, Trash2 } from 'lucide-react';
+import { format } from 'date-fns';
 
 const USER_ID = '00000000-0000-0000-0000-000000000000';
 
 export default function AguaPage() {
   const [waterMl, setWaterMl] = useState(0); 
   const [goalMl, setGoalMl] = useState(2000); 
+  const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   
   async function initData() {
+    setLoading(true);
     const today = new Date().toISOString().split('T')[0];
     
     // 1. Pega logs de hoje
@@ -18,9 +21,11 @@ export default function AguaPage() {
       .from('water_logs')
       .select('*')
       .eq('user_id', USER_ID)
-      .gte('recorded_at', `${today}T00:00:00Z`);
+      .gte('recorded_at', `${today}T00:00:00Z`)
+      .order('recorded_at', { ascending: false });
     
     if (data) {
+      setLogs(data);
       const total = data.reduce((acc, curr) => acc + curr.amount_ml, 0);
       setWaterMl(total);
     }
@@ -45,8 +50,14 @@ export default function AguaPage() {
       .insert([{ user_id: USER_ID, amount_ml: amount }]);
 
     if (!error) {
-      setWaterMl(prev => prev + amount);
+      initData();
     }
+  };
+
+  const deleteWater = async (id) => {
+    if (!confirm('⚽ Apagar esse registro de água?')) return;
+    const { error } = await supabase.from('water_logs').delete().eq('id', id);
+    if (!error) initData();
   };
 
   const percentage = Math.min(100, Math.round((waterMl / goalMl) * 100));
@@ -60,7 +71,7 @@ export default function AguaPage() {
   };
 
   return (
-    <div style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <div style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '2rem' }}>
       
       <div className="card" style={{ textAlign: 'center', position: 'relative' }}>
         <h2 className="title-primary">Hidratação do Campo 💧</h2>
@@ -137,6 +148,32 @@ export default function AguaPage() {
               <Droplets size={14} />
               +{amount}ml
             </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="card">
+        <h2 className="title-primary">Irrigações de Hoje</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {logs.length === 0 && <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>O campo está seco! Adicione água.</p>}
+          {logs.map(log => (
+            <div key={log.id} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0.8rem',
+              borderRadius: '8px',
+              background: '#f8f9fa',
+              borderLeft: '4px solid var(--water-blue)'
+            }}>
+              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--water-blue)' }}>+{log.amount_ml}ml</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{format(new Date(log.recorded_at), 'HH:mm')}</span>
+                <button onClick={() => deleteWater(log.id)} style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer' }}>
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       </div>

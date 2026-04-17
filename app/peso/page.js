@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import WeightChart from '../../components/Weight/WeightChart';
 import MotivationalCard from '../../components/Weight/MotivationalCard';
 import { format } from 'date-fns';
+import { Trash2 } from 'lucide-react';
 
 const USER_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -62,8 +63,14 @@ export default function PesoPage() {
     }
   };
 
+  const deleteWeight = async (id) => {
+    if (!confirm('⚽ Apagar esse registro de peso?')) return;
+    const { error } = await supabase.from('weight_logs').delete().eq('id', id);
+    if (!error) fetchHistory();
+  };
+
   return (
-    <div style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <div style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '2rem' }}>
       {showGoal && <div className="goal-animation">⚽ GOL!! Peso Registrado!</div>}
       
       <MotivationalCard />
@@ -102,7 +109,7 @@ export default function PesoPage() {
               padding: '0 1.5rem',
               fontWeight: '700',
               fontSize: '1.1rem',
-              boxShadow: '0 4px 10px rgba(46, 204, 113, 0.3)'
+              boxShadow: '0 4px 10px rgba(46, 204, 113, 0.1)'
             }}
           >
             Salvar
@@ -119,6 +126,32 @@ export default function PesoPage() {
         ) : (
           <WeightChart data={history} />
         )}
+      </div>
+
+      <div className="card">
+        <h2 className="title-primary">Últimas Pesagens</h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {history.length === 0 && <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Nenhum dado no radar.</p>}
+          {history.slice(-5).reverse().map(log => (
+            <div key={log.id} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0.8rem',
+              borderRadius: '8px',
+              background: '#f8f9fa',
+              borderLeft: `4px solid ${log.color === 'green' ? 'var(--field-green)' : '#e74c3c'}`
+            }}>
+              <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>{log.weight} kg</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{format(new Date(log.recorded_at), 'dd/MM')}</span>
+                <button onClick={() => deleteWeight(log.id)} style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer' }}>
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

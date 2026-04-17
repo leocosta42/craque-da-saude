@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import PesoPage from './peso/page';
 
 export default function Home() {
-  redirect('/peso');
+  return <PesoPage />;
 }

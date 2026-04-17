@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+:root {
+  /* Cores do Tema: Futebol e Saúde */
+  --bg-color: #f4fcf5; /* fundo claro meio esverdeado */
+  --field-green: #2ecc71; /* verde vibrante de gramado */
+  --field-green-dark: #27ae60;
+  --text-main: #2c3e50;
+  --text-muted: #7f8c8d;
+  
+  --weight-loss-green: #2ecc71;
+  --weight-gain-orange: #f39c12; /* laranja solicitado */
+  --neutral-gray: #bdc3c7;
+  
+  --gold-trophy: #f1c40f;
+  --water-blue: #3498db;
+  --surface-color: #ffffff;
+  
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  
+  /* Gradientes Premium */
+  --grad-field: linear-gradient(135deg, var(--field-green), var(--field-green-dark));
+  --grad-water: linear-gradient(135deg, #74b9ff, var(--water-blue));
+  --grad-surface: linear-gradient(to bottom, #ffffff, #fcfcfc);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* Utilitários Premium que não precisam do Tailwind */
+.card {
+  background: var(--surface-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.title-primary {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* App Container (Mobile layout) */
+.app-container {
+  max-width: 480px; /* layout mobile */
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg-color);
+  position: relative;
+  padding-bottom: 80px; /* Espaço pro bottom nav */
+  box-shadow: 0 0 20px rgba(0,0,0,0.05); /* Sombra lateral no desktop */
+}
+
+/* Navegação e Estrutura ficarão nos seus próprios módulos, mas aqui tem a base */

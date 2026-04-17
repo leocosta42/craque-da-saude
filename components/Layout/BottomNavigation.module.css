@@ -1,0 +1,63 @@
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface-color);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  z-index: 50;
+}
+
+/* Para desktop, limita ao tamanho do container */
+@media (min-width: 480px) {
+  .bottomNav {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+  }
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0.5rem 1rem 1.5rem 1rem; /* Extra padding at bottom for iOS home indicator */
+}
+
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  flex: 1;
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.iconContainer {
+  padding: 0.5rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 2px;
+  transition: all 0.3s ease;
+}
+
+.label {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.active {
+  color: var(--field-green-dark);
+}
+
+.active .iconContainer {
+  background: var(--grad-field);
+  color: white;
+  transform: translateY(-4px);
+  box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+}

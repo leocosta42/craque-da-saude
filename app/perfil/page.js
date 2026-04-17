@@ -12,6 +12,7 @@ export default function PerfilPage() {
     startWeight: '',
     goal: ''
   });
+  const [isSaving, setIsSaving] = useState(false);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -32,13 +33,19 @@ export default function PerfilPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setIsSaving(true);
+    // Simulação para feedback visual
+    await new Promise(resolve => setTimeout(resolve, 800));
+
     localStorage.setItem('craque_name', formData.name);
     localStorage.setItem('craque_age', formData.age);
     localStorage.setItem('craque_height', formData.height);
     localStorage.setItem('craque_startWeight', formData.startWeight);
     localStorage.setItem('craque_goal', formData.goal);
+    
     showToast('Perfil de Atleta atualizado com sucesso! 🏆', 'success');
+    setIsSaving(false);
   };
 
   return (
@@ -100,7 +107,8 @@ export default function PerfilPage() {
 
         <button 
           onClick={handleSave}
-          className="btn-pulse"
+          disabled={isSaving}
+          className={!isSaving ? 'btn-pulse' : ''}
           style={{
             width: '100%',
             padding: '1.2rem',
@@ -110,10 +118,11 @@ export default function PerfilPage() {
             borderRadius: '12px',
             fontWeight: 800,
             marginTop: '1rem',
-            cursor: 'pointer'
+            cursor: isSaving ? 'not-allowed' : 'pointer',
+            height: '60px'
           }}
         >
-          SALVAR ALTERAÇÕES 🏆
+          {isSaving ? <span className="btn-spinner"></span> : 'SALVAR ALTERAÇÕES 🏆'}
         </button>
       </div>
     </div>

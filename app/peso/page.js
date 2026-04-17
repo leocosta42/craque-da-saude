@@ -14,6 +14,7 @@ export default function PesoPage() {
   const [showGoal, setShowGoal] = useState(false);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const { showToast, showConfirm } = useToast();
 
   async function fetchHistory() {
@@ -50,6 +51,7 @@ export default function PesoPage() {
       return;
     }
 
+    setIsSaving(true);
     const { error } = await supabase
       .from('weight_logs')
       .insert([{ user_id: USER_ID, weight: val }]);
@@ -58,11 +60,12 @@ export default function PesoPage() {
       setShowGoal(true);
       localStorage.setItem('craque_weight', val);
       setWeight('');
-      fetchHistory();
+      await fetchHistory();
       setTimeout(() => setShowGoal(false), 3000);
     } else {
       showToast('Tivemos um problema no gramado! Tente novamente.', 'error');
     }
+    setIsSaving(false);
   };
 
   const deleteWeight = (id) => {
@@ -104,7 +107,8 @@ export default function PesoPage() {
           </div>
           <button 
             onClick={handleSave}
-            className="btn-pulse"
+            disabled={isSaving}
+            className={!isSaving ? 'btn-pulse' : ''}
             style={{
               background: 'var(--grad-field)',
               color: 'white',
@@ -113,10 +117,11 @@ export default function PesoPage() {
               padding: '0 1.5rem',
               fontWeight: '700',
               fontSize: '1.1rem',
-              boxShadow: '0 4px 10px rgba(46, 204, 113, 0.1)'
+              boxShadow: '0 4px 10px rgba(46, 204, 113, 0.1)',
+              minWidth: '100px'
             }}
           >
-            Salvar
+            {isSaving ? <span className="btn-spinner"></span> : 'Salvar'}
           </button>
         </div>
       </div>

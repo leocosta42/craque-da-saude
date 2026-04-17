@@ -54,18 +54,55 @@ button {
   cursor: pointer;
   border: none;
   background: none;
-  transition: transform 0.1s ease, filter 0.2s ease, opacity 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden; /* Para o efeito ripple */
 }
 
 button:active {
-  transform: scale(0.95);
+  transform: scale(0.96);
   filter: brightness(0.9);
 }
 
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.7;
   cursor: not-allowed;
   transform: none !important;
+}
+
+/* Efeito Ripple Sutil */
+button::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.4);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+button:focus:not(:active)::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% { transform: scale(0, 0); opacity: 0.5; }
+  100% { transform: scale(40, 40); opacity: 0; }
+}
+
+/* Mini Spinner para Botões */
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
 }
 
 /* Utilitários Premium que não precisam do Tailwind */

@@ -20,6 +20,7 @@ export default function EsportesPage() {
   const [selectedSport, setSelectedSport] = useState('futebol');
   const [duration, setDuration] = useState('30');
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const { showToast, showConfirm } = useToast();
 
   async function fetchSportsLogs() {
@@ -42,6 +43,7 @@ export default function EsportesPage() {
   }, []);
 
   const addSportLog = async () => {
+    setIsSaving(true);
     const { error } = await supabase
       .from('sports_logs')
       .insert([{ 
@@ -52,8 +54,9 @@ export default function EsportesPage() {
 
     if (!error) {
       showToast('🏆 Treino concluído! Pontos de experiência adicionados!', 'success');
-      fetchSportsLogs();
+      await fetchSportsLogs();
     }
+    setIsSaving(false);
   };
 
   const deleteSportLog = (id) => {
@@ -118,7 +121,8 @@ export default function EsportesPage() {
 
           <button 
             onClick={addSportLog}
-            className="btn-pulse"
+            disabled={isSaving}
+            className={!isSaving ? 'btn-pulse' : ''}
             style={{
               width: '100%',
               padding: '1rem',
@@ -131,10 +135,11 @@ export default function EsportesPage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
-              marginTop: '0.5rem'
+              marginTop: '0.5rem',
+              height: '54px'
             }}
           >
-            <Plus size={20} /> REGISTRAR TREINO
+            {isSaving ? <span className="btn-spinner"></span> : <><Plus size={20} /> REGISTRAR TREINO</>}
           </button>
         </div>
       </div>

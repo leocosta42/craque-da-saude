@@ -118,6 +118,7 @@ export default function EsportesPage() {
 
           <button 
             onClick={addSportLog}
+            className="btn-pulse"
             style={{
               width: '100%',
               padding: '1rem',

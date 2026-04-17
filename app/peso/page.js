@@ -104,6 +104,7 @@ export default function PesoPage() {
           </div>
           <button 
             onClick={handleSave}
+            className="btn-pulse"
             style={{
               background: 'var(--grad-field)',
               color: 'white',

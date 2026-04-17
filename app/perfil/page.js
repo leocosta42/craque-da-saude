@@ -100,6 +100,7 @@ export default function PerfilPage() {
 
         <button 
           onClick={handleSave}
+          className="btn-pulse"
           style={{
             width: '100%',
             padding: '1.2rem',

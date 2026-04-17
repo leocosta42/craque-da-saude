@@ -13,12 +13,19 @@ export default function TopHeader() {
     if (savedName) setName(savedName);
   }, []);
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bom dia';
+    if (hour < 18) return 'Boa tarde';
+    return 'Boa noite';
+  };
+
   return (
     <header className={styles.header}>
       <div className={styles.profile}>
         <div className={styles.avatar}>⚽</div>
         <div className={styles.userInfo}>
-          <span className={styles.greeting}>Jogador</span>
+          <span className={styles.greeting}>{getGreeting()}</span>
           <h1 className={styles.name}>{name}!</h1>
         </div>
       </div>

@@ -106,15 +106,11 @@ export default function Home() {
   };
 
   if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <div className="spinner"></div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
-    <div style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '2rem' }}>
+    <div className="content-area" style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', paddingBottom: '2rem' }}>
 
       {/* Greeting */}
       <div style={{ marginBottom: '0.5rem' }}>
@@ -303,6 +299,21 @@ export default function Home() {
         </p>
       </div>
 
+    </div>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div style={{ padding: '0 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '1rem' }}>
+      <div style={{ height: '40px', width: '60%', borderRadius: '8px', marginBottom: '0.5rem' }} className="skeleton-pulse"></div>
+      <div style={{ height: '80px', borderRadius: 'var(--radius-lg)' }} className="skeleton-pulse"></div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} style={{ height: '120px', borderRadius: 'var(--radius-lg)' }} className="skeleton-pulse"></div>
+        ))}
+      </div>
+      <div style={{ height: '100px', borderRadius: 'var(--radius-lg)' }} className="skeleton-pulse"></div>
     </div>
   );
 }

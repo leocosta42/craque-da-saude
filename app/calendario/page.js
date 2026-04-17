@@ -37,8 +37,8 @@ export default function CalendarioPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLogs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMonth]);
 
   // Grade de dias (D S T Q Q S S)
@@ -54,7 +54,8 @@ export default function CalendarioPage() {
 
   // Mapeamento de logs para acesso rápido e lógica de cores
   const logsMap = {};
-  const uniqueDaysList = [];
+  let lossDays = 0;
+  let gainDays = 0;
   
   weightLogs.forEach((log) => {
     const dateKey = format(new Date(log.recorded_at), 'yyyy-MM-dd');
@@ -87,11 +88,8 @@ export default function CalendarioPage() {
   };
 
   // Cálculo Simples de Sequência (Dias seguidos com registro)
-  let tempStreak = 0;
-  // Ordenamos todos os logs para ver a sequência global
-  const allDates = weightLogs.map(l => format(new Date(l.recorded_at), 'yyyy-MM-dd'));
   // (Simplificado para fins de UI lúdica)
-  stats.streak = currentMonthLogs.length; 
+  stats.streak = currentMonthUniqueLogs.length; 
 
   const isFuture = isAfter(addMonths(startOfMonth(currentMonth), 1), new Date());
 

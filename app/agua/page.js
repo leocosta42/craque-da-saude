@@ -11,7 +11,6 @@ export default function AguaPage() {
   const [loading, setLoading] = useState(true);
   
   async function initData() {
-    setLoading(true);
     const today = new Date().toISOString().split('T')[0];
     
     // 1. Pega logs de hoje

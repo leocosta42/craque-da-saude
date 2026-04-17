@@ -13,8 +13,6 @@ export default function PesoPage() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] = useState(true);
-
   async function fetchHistory() {
     setLoading(true);
     const { data, error } = await supabase
@@ -38,8 +36,8 @@ export default function PesoPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSave = async () => {

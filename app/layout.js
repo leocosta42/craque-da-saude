@@ -3,7 +3,7 @@ import TopHeader from '../components/Layout/TopHeader';
 import BottomNavigation from '../components/Layout/BottomNavigation';
 
 export const metadata = {
-  title: 'Craque da Saúde ⚽',
+  title: 'Craque da Saúde ⚽🏆',
   description: 'Seu acompanhamento de saúde campeão!',
 };
 
